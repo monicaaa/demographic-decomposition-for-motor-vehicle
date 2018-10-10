@@ -9,10 +9,11 @@ library(purrr)
 library(lazyeval)
 library(xtable)
 library(tidyr)
-library(zoo)
 library(srvyr)
 library(broom)
 library(scales) 
+library(magrittr)
+library(knitr)
 
 project.dir <- "/Users/moniking/Documents/demographic-decomposition-for-motor-vehicle/"
 setwd(project.dir)
@@ -41,10 +42,6 @@ list_of_cdc_travel_files <- c("cdc_travel_2001_2010",
                               "cdc_travel_2001_2010_ped",
                               "cdc_travel_2001_2010_pveh",
                               "cdc_travel_2001_2010_motorcycle")
-
-cleaned.cdc.travel<-lapply(list_of_cdc_travel_files, make_cdc_travel_df)
-names(cleaned.cdc.travel) <- list_of_cdc_travel_files
-list2env(cleaned.cdc.travel, .GlobalEnv)
 
 # 2000 population distribution
 pop2000stand <- read.csv(c(paste0(data.dir, "pop2000stand.csv")))

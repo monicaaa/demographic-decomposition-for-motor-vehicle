@@ -3,25 +3,38 @@ title: "Analysis and Plots"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, eval=TRUE, include=FALSE}
+library(knitr)
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(ggthemes)
+library(foreign)
+library(stargazer)
+library(stringr)
+library(purrr)
+library(lazyeval)
+library(xtable)
+library(tidyr)
+library(srvyr)
+library(broom)
+library(scales) 
+library(magrittr)
+read_chunk("utils.r")
+read_chunk("config.r")
+read_chunk("clean.r")
+
 ```
 
-## R Markdown
+## Exposure, Risk, and Decomposition Plots
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+TBA
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Figure: Risk and Exposure Effects 
 
-```{r cars}
-summary(cars)
-```
+Description TBA 
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
+```{r, eval=TRUE, echo=TRUE}
 # Risk and Exposure effects
 risk_exp_plot <- ggplot(data = decomp_combined %>% 
                           dplyr::select(-total_effect, -c(risk_percent_mile:exp_percent_mile)) %>%
@@ -44,6 +57,8 @@ risk_exp_plot <- ggplot(data = decomp_combined %>%
   theme(legend.text = element_text(size = 12)) +
   theme(strip.text = element_text(size=12)) +
   theme(legend.position="bottom") 
+
+risk_exp_plot
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

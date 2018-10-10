@@ -10,7 +10,7 @@ Data required
 * CDC travel comparison (Passenger Vehicle): https://wonder.cdc.gov/controller/saved/D76/D7F511
 * CDC travel comparison (Motorcycle): https://wonder.cdc.gov/controller/saved/D76/D7F912
 
-3) National Household Travel Survey
+2) National Household Travel Survey
 * Download 2001 and 2009 Trip and Person files: http://nhts.ornl.gov/download.shtml
 
 R Dependencies
@@ -26,7 +26,12 @@ purrr
 lazyeval
 xtable
 tidyr
-zoo
 srvyr
 broom
 scales 
+
+Description of R scripts
+-------
+- utils.r contains all functions for the project
+- config.r sources code from utils.r and reads in data
+- clean.r runs functions to clean all necessary data 
