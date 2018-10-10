@@ -15,20 +15,20 @@ Data required
 
 R Dependencies
 --------
-dplyr
-reshape2
-ggplot2
-ggthemes
-foreign
-stargazer
-stringr
-purrr
-lazyeval
-xtable
-tidyr
-srvyr
-broom
-scales 
+* dplyr
+* reshape2
+* ggplot2
+* ggthemes
+* foreign
+* stargazer
+* stringr
+* purrr
+* lazyeval
+* xtable
+* tidyr
+* srvyr
+* broom
+* scales 
 
 Description of R scripts
 -------
