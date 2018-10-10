@@ -8,7 +8,6 @@ Data required
 * CDC travel comparison (all MV): https://wonder.cdc.gov/controller/saved/D76/D7F505
 * CDC travel comparison (Pedestrian): https://wonder.cdc.gov/controller/saved/D76/D7F510
 * CDC travel comparison (Passenger Vehicle): https://wonder.cdc.gov/controller/saved/D76/D7F511
-* CDC travel comparison (Motorcycle): https://wonder.cdc.gov/controller/saved/D76/D7F912
 
 2) National Household Travel Survey
 * Download 2001 and 2009 Trip and Person files: http://nhts.ornl.gov/download.shtml
