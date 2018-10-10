@@ -8,13 +8,15 @@ This work is published in Chapter 2 of my dissertation, [Under the Hood: Reveali
 Data required
 ------
 
-1) Vital Statistics data from the CDC WONDER online database. 
+1) **Vital Statistics data from the CDC WONDER online database**
+
 Use the following saved links to export txt files of motor vehicle deaths grouped by age, gender, and race (non-Hispanic):
 * All MV deaths for the population of interest, 2001-2010: https://wonder.cdc.gov/controller/saved/D76/D7F505
 * Pedestrian MV deaths for the population of interest, 2001-2010: https://wonder.cdc.gov/controller/saved/D76/D7F510
 * Passenger vehicle MV deaths for the population of interest, 2001-2010: https://wonder.cdc.gov/controller/saved/D76/D7F511
 
-2) National Household Travel Survey
+2) **National Household Travel Survey**
+
 Only download Trip and Person files in CSV for the two surveys. 
 * Link to download: http://nhts.ornl.gov/download.shtml
 
