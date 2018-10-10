@@ -1,0 +1,363 @@
+# VITAL STATS: clean and tidy ----------------------------------------
+
+read_in_cdc_region <- function(filename, col = 10){
+  rawdata <- read.table(c(paste(data.dir, filename, ".txt", sep="")), 
+                        fill=TRUE, header=TRUE, sep="\t", na.strings=c(""), 
+                        colClasses = c("NULL",rep(NA,col)))
+  return(na.omit(rawdata))
+}
+
+rename_column_cdcwonder <- function(df_in){
+  names(df_in) <- tolower(names(df_in)) 
+  colnames(df_in)[grep(".*age.*code", colnames(df_in))] <- "age" # simplify age 
+  colnames(df_in)[grep("cause.of.death.code", colnames(df_in))] <- "icd" # simplify icd
+  if("census.region" %in% colnames(df_in)){
+    names(df_in)[names(df_in)=="census.region"] <- "region"
+  }
+  if("age.adjusted.rate" %in% colnames(df_in)){
+    names(df_in)[names(df_in)=="age.adjusted.rate"] <- "aa.rate"
+  }
+  return(df_in)
+}
+
+rename_levels_cdcwonder <- function(df_in){
+  levels(df_in$race)[levels(df_in$race)=="Black or African American"] <- "Black" # simplify race label
+  if("age" %in% colnames(df_in)){
+    levels(df_in$age)[levels(df_in$age)=="5-9"] <- "05-09" # format age
+  }
+  if("region" %in% colnames(df_in)){
+    levels(df_in$region) <- sub(".*:", "", levels(df_in$region))
+  }
+  df_in$race <- relevel(df_in$race, ref = 2)
+  return(df_in)
+}
+
+make_age_groups <- function(df_in){
+  newdf <- df_in %>% 
+    mutate(age.range = gsub("-", ".", paste0("age",age)))  # reformat age
+  newdf$age.range <- as.factor(newdf$age.range)
+  newdf$age.cat <- NA
+  newdf$age.cat[newdf$age.range %in% c("age05.09", "age10.14", "age5.14")] <- "age05.14"
+  newdf$age.cat[newdf$age.range %in% c("age15.19", "age20.24", "age15.24")] <- "age15.24"
+  newdf$age.cat[newdf$age.range %in% c("age25.34", "age35.44")] <- "age25.44"
+  newdf$age.cat[newdf$age.range %in% c("age45.54", "age55.64")] <- "age45.64"
+  newdf$age.cat[newdf$age.range %in% c("age65.74", "age75.84")] <- "age65.84"
+  newdf$age.cat <- as.factor(newdf$age.cat)
+  newdf$age <- factor(newdf$age, 
+                      levels = c("05-09", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", 
+                                 "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84"))
+  return(newdf)
+}
+
+make_cdc_travel_df <- function(df_in){
+  newdf <- read_in_cdc_region(df_in) %>%
+    rename_column_cdcwonder() %>%
+    rename_levels_cdcwonder() %>%
+    make_age_groups() %>%
+    dplyr::select(gender, race, deaths, population, age.cat) %>%
+    group_by(gender, race, age.cat) %>%
+    summarise(deaths = sum(deaths),
+              population = sum(population))
+  return(newdf)
+}
+
+# TRAVEL SURVEY: read ----------------------------------------
+list_nhts_files <- function(years){
+  list.files(path = paste0(data.dir, "travel", "/", years), pattern="*.csv")
+}
+
+lower_colnames <- function(df_in){
+  colnames(df_in) <- tolower(colnames(df_in))
+  return(df_in)
+}
+
+rename_column_travel <- function(df_in){
+  names(df_in)[names(df_in) %in% c("serial","houseid")]<- "house_id"
+  names(df_in)[names(df_in) %in% c("per_no","personid")]<- "person_id"
+  names(df_in)[names(df_in) %in% c("hh_race", "hhr_race")]<- "race"
+  names(df_in)[names(df_in) %in% c("hh_hisp", "hhr_hisp")]<- "hisp"
+  names(df_in)[names(df_in) %in% c("perwgt", "pe1fiwgt","wtperfin")]<- "perweight"
+  names(df_in)[names(df_in) %in% c("sex", "r_sex")]<- "gender"
+  names(df_in)[names(df_in) %in% c("r_age")]<- "age"
+  names(df_in)[names(df_in) %in% c("trpmiles")]<- "distance"
+  names(df_in)[names(df_in) %in% c("perwttif", "dapfiwgt", "wttrdfin")]<- "tripweight"
+  names(df_in)[names(df_in) %in% c("means", "trptrans")]<- "mode"
+  return(df_in)
+}
+
+clean_race_travel <- function(df_in){
+  if("race" %in% colnames(df_in)){
+    df_in$race <- as.factor(df_in$race)
+    levels(df_in$race) <- c("White", "Black", 
+                            rep("Other", length.out = length(levels(df_in$race))-2))
+  }
+  return(df_in)
+}
+
+clean_sex_travel <- function(df_in){
+  if("gender" %in% colnames(df_in)){
+    df_in$gender <- as.factor(df_in$gender)
+    levels(df_in$gender) <- c("Male", "Female", 
+                              rep("Other", length.out = length(levels(df_in$gender))-2))
+  }
+  return(df_in)
+}
+
+clean_region_travel <- function(df_in){
+  if("census_r" %in% colnames(df_in)){
+    df_in$census_r <- as.factor(df_in$census_r)
+    levels(df_in$census_r) <- c("Northeast", "Midwest", "South", "West")
+  }
+  return(df_in)
+}
+
+clean_distance_travel <- function(df_in){
+  if("distance" %in% colnames(df_in)){
+    df_in$distance[df_in$distance==99997] <- 0.25
+    df_in$distance[df_in$distance>9997] <- NA
+    df_in$distance[df_in$distance==0] <- 0.25
+    df_in$distance[df_in$distance==9997] <- 0.50
+    df_in$distance[df_in$distance==9996] <- 0.06
+    df_in$distance[df_in$distance<0] <- NA
+  }
+  return(df_in)
+}
+
+clean_mode_travel <- function(df_in){
+  if("mode" %in% colnames(df_in)){
+    df_in$mode <- as.factor(df_in$mode)
+    if(length(levels(df_in$mode))==20){
+      levels(df_in$mode) <- c("Auto", "Van", "Van", "Other Truck",
+                              "Motorcycle", "Rec", "Taxi", 
+                              "Bus", "Train", "Streetcar",
+                              "El", "Airplane", "Taxi", "Truck", "Bicycle",
+                              "Walk", "School bus", "Moped", "Other", NA)
+    }
+    if(length(levels(df_in$mode))==23){
+      levels(df_in$mode) <- c("Auto", "Station Wagon", "Passenger Van", "Other Van",
+                              "Pickup Truck", "Pickup with camper", "Other truck", 
+                              "Motorized camper coach", "Motorcycle", "Motorized bike moped",
+                              "Other POV", "Bus", "Train", "Streetcar", "El or subway",
+                              "Airplane", "Taxi Commercial", "Bicycle", "Walk", "School bus", 
+                              "Other", NA, NA)
+    }
+    if(length(levels(df_in$mode))==22){
+      levels(df_in$mode) <- c("Auto", "Van", "Van", "Pickup truck",
+                              "Other truck", "RV", "Motorcycle", "Motorized bike moped",
+                              "Other POV", "Bus", "Amtrak", "Commuter train", "Streetcar", "El or subway",
+                              "Airplane", "Taxi Commercial", "Bicycle", "Walk", "School bus", 
+                              "Other", NA, NA)
+    }
+    if(length(levels(df_in$mode))==21){
+      levels(df_in$mode) <- c("Auto", "Van", "SUV", "Pickup truck",
+                              "Other truck", "RV", "Motorcycle",
+                              "Other POV", "Bus", "Amtrak", "Commuter train", "Streetcar", "El or subway",
+                              "Airplane", "Taxi Commercial", "Bicycle", "Walk", "School bus", 
+                              "Other", NA, NA)
+    }
+    if(length(levels(df_in$mode))==27){
+      levels(df_in$mode) <- c("Auto", "Van", "SUV", "Pickup truck",
+                              "Other truck", "RV", "Motorcycle", "Plane",
+                              "Plane", "Bus", "Bus", "School bus", "Bus", "Bus", 
+                              "Amtrak", "Commuter train", "El or subway", "Streetcar",
+                              "Ship", "Ferry", "Sailboat", "Taxi Commercial", "Limo",
+                              "Hotel shuttle", "Bicycle", "Walk",
+                              "Other")
+    }
+    if(length(levels(df_in$mode))==25){
+      levels(df_in$mode) <- c("Auto", "Van", "SUV", "Pickup truck",
+                              "Other truck", "RV", "Motorcycle", "Light electric vehicle",
+                              "Bus", "Bus", "School bus", "Bus", "Bus", "Bus",
+                              "Amtrak", "Commuter train", "El or subway", "Streetcar",
+                              "Taxi Commercial", "Ferry", "Plane", 
+                              "Bicycle", "Walk", "Special transit", "Other")
+    }
+  }
+  return(df_in)
+}
+
+clean_mode_type_travel <- function(df_in){
+  if("mode" %in% colnames(df_in)){
+    df_in$mode_type <- "Other"
+    df_in$mode_type[df_in$mode %in% c("Auto", "Van", "Pickup truck", "SUV")] <- "Pvehicle"
+    df_in$mode_type[df_in$mode %in% c("Walk")] <- "Walk"
+    df_in$mode_type[df_in$mode %in% c("Motorcycle")] <- "Motorcycle"
+    df_in$mode_type <- as.factor(df_in$mode_type)
+  }
+  return(df_in)
+}
+
+clean_hisp_travel <- function(df_in){
+  if("hisp" %in% colnames(df_in)){
+    df_in$hisp <- as.factor(df_in$hisp)
+    levels(df_in$hisp) <- c("Hisp", "Nonhisp", 
+                            rep("Other", length.out = length(levels(df_in$hisp))-2))
+    return(df_in)
+  }
+  if(!("hisp" %in% colnames(df_in))){
+    df_in$hisp <- "Nonhisp"
+    df_in$hisp <- as.factor(df_in$hisp)
+    return(df_in)
+  }
+}
+
+
+make_age_groups_5 <- function(df_in){
+  if("age" %in% colnames(df_in)){
+    df_in$age.range <- NA
+    df_in$age.range[df_in$age >= 5 & df_in$age <=9] <- "age05.09"
+    df_in$age.range[df_in$age >= 10 & df_in$age <=14] <- "age10.14"
+    df_in$age.range[df_in$age >= 15 & df_in$age <=19] <- "age15.19"
+    df_in$age.range[df_in$age >= 20 & df_in$age <=24] <- "age20.24"
+    df_in$age.range[df_in$age >= 25 & df_in$age <=29] <- "age25.29"
+    df_in$age.range[df_in$age >= 30 & df_in$age <=34] <- "age30.34"
+    df_in$age.range[df_in$age >= 35 & df_in$age <=39] <- "age35.39"
+    df_in$age.range[df_in$age >= 40 & df_in$age <=44] <- "age40.44"
+    df_in$age.range[df_in$age >= 45 & df_in$age <=49] <- "age45.49"
+    df_in$age.range[df_in$age >= 50 & df_in$age <=54] <- "age50.54"
+    df_in$age.range[df_in$age >= 55 & df_in$age <=59] <- "age55.59"
+    df_in$age.range[df_in$age >= 60 & df_in$age <=64] <- "age60.64"
+    df_in$age.range[df_in$age >= 65 & df_in$age <=69] <- "age65.69"
+    df_in$age.range[df_in$age >= 70 & df_in$age <=74] <- "age70.74"
+    df_in$age.range[df_in$age >= 75 & df_in$age <=79] <- "age75.79"
+    df_in$age.range[df_in$age >= 80 & df_in$age <=84] <- "age80.84"
+    df_in$age.range <- as.factor(df_in$age.range)
+  }
+  return(df_in)
+}
+
+make_age_groups_10 <- function(df_in){
+  if("age" %in% colnames(df_in)){
+    df_in$age.cat10 <- NA
+    df_in$age.cat10[df_in$age >= 15 & df_in$age <=24] <- "age15.24"
+    df_in$age.cat10[df_in$age >= 25 & df_in$age <=34] <- "age25.34"
+    df_in$age.cat10[df_in$age >= 35 & df_in$age <=44] <- "age35.44"
+    df_in$age.cat10[df_in$age >= 45 & df_in$age <=54] <- "age45.54"
+    df_in$age.cat10[df_in$age >= 55 & df_in$age <=64] <- "age55.64"
+    df_in$age.cat10[df_in$age >= 65 & df_in$age <=74] <- "age65.74"
+    df_in$age.cat10[df_in$age >= 75 & df_in$age <=84] <- "age75.84"
+    df_in$age.cat10 <- as.factor(df_in$age.cat10)
+  }
+  return(df_in)
+}
+
+make_age_groups_cont <- function(df_in){
+  if("age" %in% colnames(df_in)){
+    df_in$age.cat <- NA
+    df_in$age.cat[df_in$age >= 5 & df_in$age <=14] <- "age05.14"
+    df_in$age.cat[df_in$age >= 15 & df_in$age <=24] <- "age15.24"
+    df_in$age.cat[df_in$age >= 25 & df_in$age <=44] <- "age25.44"
+    df_in$age.cat[df_in$age >= 45 & df_in$age <=64] <- "age45.64"
+    df_in$age.cat[df_in$age >= 65 & df_in$age <=84] <- "age65.84"
+    df_in$age.cat <- as.factor(df_in$age.cat)
+  }
+  return(df_in)
+}
+
+clean_all_nhts <- function(df_in){
+  newdf <- df_in %>%
+    lower_colnames %>%
+    rename_column_travel %>%
+    clean_race_travel %>%
+    clean_sex_travel %>%
+    clean_region_travel %>%
+    clean_distance_travel %>%
+    clean_mode_travel %>%
+    clean_mode_type_travel %>%
+    clean_hisp_travel %>%
+    make_age_groups_cont %>%
+    make_age_groups_5 %>%
+    make_age_groups_10
+  return(newdf)
+}
+
+get_pop_bygroup <- function(df_in){
+  if("hisp" %in% colnames(df_in)){
+    newdf <- df_in %>%
+      group_by(gender, race, hisp, age.cat) %>%
+      summarise(pop = sum(perweight)) %>%
+      filter(race %in% c("Black", "White"),
+             hisp == "Nonhisp",
+             gender %in% c("Male", "Female")) %>%
+      na.omit %>%
+      as.data.frame()
+    return(newdf)
+  }
+}
+
+get_travel_bygroup <- function(df_in, mode_type = "All"){
+  if(mode_type=="Walk"){
+    df_in <- df_in %>%
+      filter(mode_type == "Walk")
+  }
+  if(mode_type=="Pvehicle"){
+    df_in <- df_in %>%
+      filter(mode_type == "Pvehicle")
+  }
+  if(mode_type=="Motorcycle"){
+    df_in <- df_in %>%
+      filter(mode_type == "Motorcycle")
+  }
+  newdf <- df_in %>%
+    group_by(gender, race, hisp, age.cat) %>%
+    summarise(ptrips = sum(as.numeric(tripweight, na.rm= TRUE)),
+              pmt = sum(tripweight*distance, na.rm = TRUE)) %>%
+    filter(race %in% c("Black", "White"),
+           hisp == "Nonhisp") %>%
+    na.omit %>%
+    as.data.frame()
+  return(newdf)
+}
+
+get_exposure_1year <- function(year_in, mode_in = "All"){
+  newdf <- get_travel_bygroup(eval(parse(text = paste0("trip", year_in))), mode_type = mode_in) %>%
+    get_exposure(pop_in = eval(parse(text = paste0("popgroup", year_in))),
+                 travel_in = .) %>%
+    mutate(year = year_in)
+  return(newdf)
+}
+
+get_exposure <- function(pop_in, travel_in, exp_type = NULL){
+  newdf <- pop_in %>%
+    inner_join(travel_in) %>%
+    mutate(ptrip_per_pop = ptrips / pop / 365, 
+           pmt_per_pop = pmt / pop/ 365) %>% 
+    dplyr::select(-c(pop:pmt)) %>%
+    melt(variable.name = "mode_type", 
+         value.name = "exposure")  
+  return(newdf)
+}
+
+calc_exp_risk_2000 <- function(df_2001, df_2009, df_cdc){
+  newdf <- df_2001 %>% 
+    rbind(df_2009) %>%
+    dcast(gender + race + age.cat~ mode_type + year, value.var = "exposure") %>%
+    mutate(avg_daily_trip = (ptrip_per_pop_2001 + ptrip_per_pop_2009)/2,
+           avg_daily_mile = (pmt_per_pop_2001 + pmt_per_pop_2009)/2) %>%
+    left_join(df_cdc) %>%
+    mutate(total_trip_exp = avg_daily_trip*365*population,
+           total_mile_exp = avg_daily_mile*365*population,
+           risk_trip = deaths/total_trip_exp*10000000,
+           risk_mile = deaths/total_mile_exp*100000000,
+           death_10000_pop = deaths/population*100000,
+           exp_trip = (total_trip_exp/10000000)/population*100000,
+           exp_mile = (total_mile_exp/100000000)/population*100000) %>%
+    dplyr::select(-(ptrip_per_pop_2001:pmt_per_pop_2009)) %>%
+    arrange(gender, age.cat, race)
+  return(newdf)
+}
+
+decompose <- function(df_in){
+  df_in$race <- as.factor(df_in$race)
+  df_in$age.cat <- as.factor(df_in$age.cat)
+  df_in$gender <- as.factor(df_in$gender)
+  newdf <- df_in %>%
+    arrange(gender, age.cat, desc(race)) %>%
+    dplyr::group_by(gender, age.cat) %>%
+    summarise(total_effect = diff(death_10000_pop), 
+              risk_effect_mile = (sum(exp_mile)/2*diff(risk_mile)),
+              exp_effect_mile = (sum(risk_mile)/2*diff(exp_mile)),
+              risk_percent_mile = risk_effect_mile/total_effect*100,
+              exp_percent_mile = exp_effect_mile/total_effect*100)
+  return(newdf)
+}

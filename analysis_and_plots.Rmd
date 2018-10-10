@@ -22,7 +22,28 @@ summary(cars)
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+# Risk and Exposure effects
+risk_exp_plot <- ggplot(data = decomp_combined %>% 
+                          dplyr::select(-total_effect, -c(risk_percent_mile:exp_percent_mile)) %>%
+               melt(id.vars = c("gender", "age.cat", "type")), 
+             aes(x = age.cat, y = value, fill = variable)) + 
+  geom_bar(stat="identity", position=position_dodge()) +
+  facet_grid(type ~ gender, scales = "free") +
+  theme(legend.position="bottom") + geom_hline(yintercept=0) + 
+  theme_bw() +
+  scale_fill_discrete(name=" ",
+                      breaks=c("risk_effect_mile", "exp_effect_mile"),
+                      labels=c("Risk Effect", "Exposure Effect"))+
+  scale_x_discrete("Age Categories", 
+                   labels = c("5-14", "15-24", "25-44", "45-64", "65-84")) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0)) +
+  theme(axis.text=element_text(size=12))+
+  theme(axis.title.x = element_blank()) +   # Remove x-axis label
+  theme(axis.title.y = element_blank()) +   # Remove x-axis label
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0)) +
+  theme(legend.text = element_text(size = 12)) +
+  theme(strip.text = element_text(size=12)) +
+  theme(legend.position="bottom") 
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
