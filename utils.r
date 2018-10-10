@@ -451,3 +451,26 @@ decompose <- function(df_in){
               exp_percent_mile = exp_effect_mile/total_effect*100)
   return(newdf)
 }
+
+plot_exposure <- function(exp_df, plot_title=NULL){
+  plot_out <- exp_df %>%
+    ggplot(aes(x=age.cat, y=rate, fill=race)) +
+    geom_bar(stat="identity", position=position_dodge()) +
+    scale_fill_manual(values= c("#0D4F8B", "#E69F00")) +
+    ggtitle(plot_title) + 
+    theme(legend.position="bottom") + 
+    facet_grid(factor_type ~ gender, scales = "free") +
+    theme_bw() +
+    scale_x_discrete("Age Categories", 
+                     labels = c("5-14", "15-24", "25-44", "45-64", "65-84")) +
+    theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0)) +
+    theme(axis.title.x = element_blank()) +   # Remove x-axis label
+    theme(axis.title.y = element_blank()) +   # Remove x-axis label
+    theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0)) +
+    theme(legend.position="bottom")   +
+    theme(legend.title=element_blank()) +
+    theme(legend.text = element_text(size = 12)) +
+    theme(strip.text = element_text(size=12)) +
+    theme(axis.text=element_text(size=12))
+  return(plot_out)
+}

@@ -6,25 +6,28 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
-## R Markdown
+## What are the differences in motor vehicle death rates between black and white population groups? 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+differences by age
 
 ```{r cars}
-summary(cars)
+age_stand_all %>% 
+  gather(variable, value, -(gender:race)) %>%
+  unite(temp, race, variable) %>%
+  spread(temp, value) %>% 
+  mutate(bw_percent_diff_death = (Black_death_stand-White_death_stand)/White_death_stand*100)
+  
 ```
 
-## Including Plots
+## To what extent does amount of travel account for these differences? 
 
-You can also embed plots, for example:
+exposure
+risk
 
+decomp
 ```{r pressure, echo=FALSE}
 plot(pressure)
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

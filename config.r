@@ -1,3 +1,4 @@
+# install these packages
 library(dplyr)
 library(reshape2)
 library(ggplot2)
@@ -15,18 +16,20 @@ library(scales)
 library(magrittr)
 library(knitr)
 
+# Set your project directory
 project.dir <- "/Users/moniking/Documents/demographic-decomposition-for-motor-vehicle/"
 setwd(project.dir)
-data.dir <- paste0(project.dir, "data/") # change accordingly
-source("utils.r")
 
-# output.dir <- paste(project.dir, "output/", sep="")
+# Set your data directory
+data.dir <- paste0(project.dir, "data/") 
 
-# Read in data -----------------------------------------
+source("utils.r") # sourcing all functions
 
-# CDC vital stats 1984 to 2013 ---------------
+########################################################################
+#### Read in data ------------------------------------------------------
+########################################################################
 
-# Read in national household travel survey
+# Read in raw NHTS datasets 
 
 raw.person2001 <- read.table(c(paste0(data.dir, "travel/2001/", "person", ".csv")), 
                              fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
@@ -37,11 +40,11 @@ raw.person2009 <- read.table(c(paste0(data.dir, "travel/2009/", "person", ".csv"
 raw.trip2009 <- read.table(c(paste0(data.dir, "travel/2009/", "trip", ".csv")), 
                            fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
 
-# Read in and clean CDC Travel files
+# Read in CDC Vital Stats files
 list_of_cdc_travel_files <- c("cdc_travel_2001_2010", 
                               "cdc_travel_2001_2010_ped",
                               "cdc_travel_2001_2010_pveh")
 
-# 2000 population distribution
+# 2000 population distribution for age-standardized calculations
 pop2000stand <- read.csv(c(paste0(data.dir, "pop2000stand.csv")))
 pop2000standmotor <- read.csv(c(paste0(data.dir, "pop2000standmotor.csv")))
