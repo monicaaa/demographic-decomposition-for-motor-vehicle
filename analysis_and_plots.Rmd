@@ -1,29 +1,14 @@
 ---
 title: "Analysis and Plots"
-output: html_document
+output:
+  html_document: default
 ---
 
-```{r, eval=TRUE, include=FALSE}
+```{r setup, eval=TRUE, include=FALSE}
 library(knitr)
-library(dplyr)
-library(reshape2)
-library(ggplot2)
-library(ggthemes)
-library(foreign)
-library(stargazer)
-library(stringr)
-library(purrr)
-library(lazyeval)
-library(xtable)
-library(tidyr)
-library(srvyr)
-library(broom)
-library(scales) 
-library(magrittr)
 read_chunk("utils.r")
 read_chunk("config.r")
 read_chunk("clean.r")
-
 ```
 
 ## Exposure, Risk, and Decomposition Plots
@@ -34,31 +19,7 @@ TBA
 
 Description TBA 
 
-```{r, eval=TRUE, echo=TRUE}
-# Risk and Exposure effects
-risk_exp_plot <- ggplot(data = decomp_combined %>% 
-                          dplyr::select(-total_effect, -c(risk_percent_mile:exp_percent_mile)) %>%
-               melt(id.vars = c("gender", "age.cat", "type")), 
-             aes(x = age.cat, y = value, fill = variable)) + 
-  geom_bar(stat="identity", position=position_dodge()) +
-  facet_grid(type ~ gender, scales = "free") +
-  theme(legend.position="bottom") + geom_hline(yintercept=0) + 
-  theme_bw() +
-  scale_fill_discrete(name=" ",
-                      breaks=c("risk_effect_mile", "exp_effect_mile"),
-                      labels=c("Risk Effect", "Exposure Effect"))+
-  scale_x_discrete("Age Categories", 
-                   labels = c("5-14", "15-24", "25-44", "45-64", "65-84")) +
-  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0)) +
-  theme(axis.text=element_text(size=12))+
-  theme(axis.title.x = element_blank()) +   # Remove x-axis label
-  theme(axis.title.y = element_blank()) +   # Remove x-axis label
-  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0)) +
-  theme(legend.text = element_text(size = 12)) +
-  theme(strip.text = element_text(size=12)) +
-  theme(legend.position="bottom") 
-
+```{r plot, echo=FALSE}
 risk_exp_plot
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

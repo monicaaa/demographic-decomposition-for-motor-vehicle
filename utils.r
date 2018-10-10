@@ -1,4 +1,4 @@
-# VITAL STATS: clean and tidy ----------------------------------------
+### VITAL STATS: clean and tidy ----------------------------------------
 
 read_in_cdc_region <- function(filename, col = 10){
   rawdata <- read.table(c(paste(data.dir, filename, ".txt", sep="")), 

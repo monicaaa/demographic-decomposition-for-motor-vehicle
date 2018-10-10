@@ -17,7 +17,7 @@ library(knitr)
 
 project.dir <- "/Users/moniking/Documents/demographic-decomposition-for-motor-vehicle/"
 setwd(project.dir)
-data.dir <- "/Users/moniking/Documents/demographic-decomposition-for-motor-vehicle/data/" # change accordingly
+data.dir <- paste0(project.dir, "data/") # change accordingly
 source("utils.r")
 
 # output.dir <- paste(project.dir, "output/", sep="")
@@ -40,8 +40,7 @@ raw.trip2009 <- read.table(c(paste0(data.dir, "travel/2009/", "trip", ".csv")),
 # Read in and clean CDC Travel files
 list_of_cdc_travel_files <- c("cdc_travel_2001_2010", 
                               "cdc_travel_2001_2010_ped",
-                              "cdc_travel_2001_2010_pveh",
-                              "cdc_travel_2001_2010_motorcycle")
+                              "cdc_travel_2001_2010_pveh")
 
 # 2000 population distribution
 pop2000stand <- read.csv(c(paste0(data.dir, "pop2000stand.csv")))
