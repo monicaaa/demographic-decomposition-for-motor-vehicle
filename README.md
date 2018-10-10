@@ -17,8 +17,9 @@ Use the following saved links to export txt files of motor vehicle deaths groupe
 
 2) **National Household Travel Survey**
 
-Only download Trip and Person files in CSV for the two surveys. 
-* Link to download: http://nhts.ornl.gov/download.shtml
+Download Trip and Person files in CSV for the 2001 and 2009 surveys. 
+* Link to download 2001 data: https://nhts.ornl.gov/2001/download/Ascii.zip
+* Link to download 2009 data: https://nhts.ornl.gov/2009/download/Ascii.zip
 
 R Dependencies
 --------
