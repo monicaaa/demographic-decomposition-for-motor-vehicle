@@ -1,6 +1,10 @@
 # demographic-decomposition-for-motor-vehicle
 Using demographic decomposition to explain differences in MV death rates between population groups
 
+Background
+-------
+This work is published in Chapter 2 of my dissertation, [Under the Hood: Revealing Patterns of Motor Vehicle Fatalities in the United States](https://repository.upenn.edu/edissertations/2396/). Some analyses from my dissertation are omitted from this Github repo for clarity and flow. 
+
 Data required
 ------
 
