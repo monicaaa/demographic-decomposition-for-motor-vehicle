@@ -8,13 +8,15 @@ This work is published in Chapter 2 of my dissertation, [Under the Hood: Reveali
 Data required
 ------
 
-1) Vital Statistics from the CDC WONDER online database. Use the following links to export txt files of motor vehicle deaths by age, gender, and race (non-Hispanic):
-* CDC travel comparison (all MV): https://wonder.cdc.gov/controller/saved/D76/D7F505
-* CDC travel comparison (Pedestrian): https://wonder.cdc.gov/controller/saved/D76/D7F510
-* CDC travel comparison (Passenger Vehicle): https://wonder.cdc.gov/controller/saved/D76/D7F511
+1) Vital Statistics data from the CDC WONDER online database. 
+Use the following saved links to export txt files of motor vehicle deaths grouped by age, gender, and race (non-Hispanic):
+* All MV deaths for the population of interest, 2001-2010: https://wonder.cdc.gov/controller/saved/D76/D7F505
+* Pedestrian MV deaths for the population of interest, 2001-2010: https://wonder.cdc.gov/controller/saved/D76/D7F510
+* Passenger vehicle MV deaths for the population of interest, 2001-2010: https://wonder.cdc.gov/controller/saved/D76/D7F511
 
 2) National Household Travel Survey
-* Download 2001 and 2009 Trip and Person files: http://nhts.ornl.gov/download.shtml
+Only download Trip and Person files in CSV for the two surveys. 
+* Link to download: http://nhts.ornl.gov/download.shtml
 
 R Dependencies
 --------
@@ -35,6 +37,6 @@ R Dependencies
 
 Description of R scripts
 -------
-- utils.r contains all functions for the project
-- config.r sources code from utils.r and reads in data
-- clean.r runs functions to clean all necessary data 
+- **utils.r** contains all functions for the project
+- **config.r** sources code from utils.r and reads in data
+- **clean.r** runs functions to clean all necessary data 
