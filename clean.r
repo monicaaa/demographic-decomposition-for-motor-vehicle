@@ -7,8 +7,8 @@ trip2001 <- clean_all_nhts(raw.trip2001)
 person2009 <- clean_all_nhts(raw.person2009)
 trip2009 <- clean_all_nhts(raw.trip2009)
 
-popgroup2001 <- get_pop_bygroup(person2001)
-popgroup2009 <- get_pop_bygroup(person2009)
+# DO I NEED THIS? popgroup2001 <- get_pop_bygroup(person2001)
+# DO I NEED THIS? popgroup2009 <- get_pop_bygroup(person2009)
 
 # calculated risk and exposure
 exp2001.all <- get_exposure_1year(year_in = 2001)

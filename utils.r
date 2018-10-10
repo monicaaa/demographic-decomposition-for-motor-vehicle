@@ -1,5 +1,10 @@
-### VITAL STATS: clean and tidy ----------------------------------------
+########################################################################
+### 1. CDC VITAL STATS: clean and tidy ---------------------------------
+########################################################################
 
+# Function reads in CDC Vital Stat data
+# @Param filename is the name of the .txt file
+# @return is a df
 read_in_cdc_region <- function(filename, col = 10){
   rawdata <- read.table(c(paste(data.dir, filename, ".txt", sep="")), 
                         fill=TRUE, header=TRUE, sep="\t", na.strings=c(""), 
@@ -7,6 +12,9 @@ read_in_cdc_region <- function(filename, col = 10){
   return(na.omit(rawdata))
 }
 
+# Function cleans column names of CDC Vital Stat data
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 rename_column_cdcwonder <- function(df_in){
   names(df_in) <- tolower(names(df_in)) 
   colnames(df_in)[grep(".*age.*code", colnames(df_in))] <- "age" # simplify age 
@@ -20,6 +28,9 @@ rename_column_cdcwonder <- function(df_in){
   return(df_in)
 }
 
+# Function cleans levels of certain columns of CDC Vital Stat data
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 rename_levels_cdcwonder <- function(df_in){
   levels(df_in$race)[levels(df_in$race)=="Black or African American"] <- "Black" # simplify race label
   if("age" %in% colnames(df_in)){
@@ -32,6 +43,9 @@ rename_levels_cdcwonder <- function(df_in){
   return(df_in)
 }
 
+# Function makes new age group variable with new levels for CDC Vital Stat data
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df called newdf
 make_age_groups <- function(df_in){
   newdf <- df_in %>% 
     mutate(age.range = gsub("-", ".", paste0("age",age)))  # reformat age
@@ -49,6 +63,10 @@ make_age_groups <- function(df_in){
   return(newdf)
 }
 
+#### Main function to make clean CDC death data and make it compatible with travel survey groups
+# @Param df_in is the filename of the raw CDC txt file 
+# @return is the cleaned df with aggreagated MV deaths and pop grouped by 
+# race, age, and gender
 make_cdc_travel_df <- function(df_in){
   newdf <- read_in_cdc_region(df_in) %>%
     rename_column_cdcwonder() %>%
@@ -61,16 +79,21 @@ make_cdc_travel_df <- function(df_in){
   return(newdf)
 }
 
-# TRAVEL SURVEY: read ----------------------------------------
-list_nhts_files <- function(years){
-  list.files(path = paste0(data.dir, "travel", "/", years), pattern="*.csv")
-}
+########################################################################
+### 2. NHTS TRAVEL SURVEY: read ----------------------------------------
+########################################################################
 
+# Function to lower column names
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 lower_colnames <- function(df_in){
   colnames(df_in) <- tolower(colnames(df_in))
   return(df_in)
 }
 
+# Function to relabel variable names, especially as names differ across surveys
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 rename_column_travel <- function(df_in){
   names(df_in)[names(df_in) %in% c("serial","houseid")]<- "house_id"
   names(df_in)[names(df_in) %in% c("per_no","personid")]<- "person_id"
@@ -85,6 +108,9 @@ rename_column_travel <- function(df_in){
   return(df_in)
 }
 
+# Function to relabel race as white, black, other
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 clean_race_travel <- function(df_in){
   if("race" %in% colnames(df_in)){
     df_in$race <- as.factor(df_in$race)
@@ -94,6 +120,9 @@ clean_race_travel <- function(df_in){
   return(df_in)
 }
 
+# Function to relabel gender
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 clean_sex_travel <- function(df_in){
   if("gender" %in% colnames(df_in)){
     df_in$gender <- as.factor(df_in$gender)
@@ -103,6 +132,9 @@ clean_sex_travel <- function(df_in){
   return(df_in)
 }
 
+# Function to relabel census regions
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 clean_region_travel <- function(df_in){
   if("census_r" %in% colnames(df_in)){
     df_in$census_r <- as.factor(df_in$census_r)
@@ -111,6 +143,9 @@ clean_region_travel <- function(df_in){
   return(df_in)
 }
 
+# Function to recode trip distance based on data documention
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 clean_distance_travel <- function(df_in){
   if("distance" %in% colnames(df_in)){
     df_in$distance[df_in$distance==99997] <- 0.25
@@ -123,6 +158,9 @@ clean_distance_travel <- function(df_in){
   return(df_in)
 }
 
+# Function to relabel mode across different years of the NHTS 
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 clean_mode_travel <- function(df_in){
   if("mode" %in% colnames(df_in)){
     df_in$mode <- as.factor(df_in$mode)
@@ -176,6 +214,9 @@ clean_mode_travel <- function(df_in){
   return(df_in)
 }
 
+# Function to create a new variable with only the relevant modes of travel
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 clean_mode_type_travel <- function(df_in){
   if("mode" %in% colnames(df_in)){
     df_in$mode_type <- "Other"
@@ -187,6 +228,9 @@ clean_mode_type_travel <- function(df_in){
   return(df_in)
 }
 
+# Function to relabel Hispanic
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 clean_hisp_travel <- function(df_in){
   if("hisp" %in% colnames(df_in)){
     df_in$hisp <- as.factor(df_in$hisp)
@@ -194,17 +238,19 @@ clean_hisp_travel <- function(df_in){
                             rep("Other", length.out = length(levels(df_in$hisp))-2))
     return(df_in)
   }
-  if(!("hisp" %in% colnames(df_in))){
+  if(!("hisp" %in% colnames(df_in))){ # older NHTS didn't collect Hispanic ethnicity
     df_in$hisp <- "Nonhisp"
     df_in$hisp <- as.factor(df_in$hisp)
     return(df_in)
   }
 }
 
-
+# Function to relabel age groups for 5-year categories
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 make_age_groups_5 <- function(df_in){
   if("age" %in% colnames(df_in)){
-    df_in$age.range <- NA
+    df_in$age.range <- NA # those outside the ranges below are labeled as missing 
     df_in$age.range[df_in$age >= 5 & df_in$age <=9] <- "age05.09"
     df_in$age.range[df_in$age >= 10 & df_in$age <=14] <- "age10.14"
     df_in$age.range[df_in$age >= 15 & df_in$age <=19] <- "age15.19"
@@ -226,9 +272,12 @@ make_age_groups_5 <- function(df_in){
   return(df_in)
 }
 
+# Function to relabel age groups for 10-year categories
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 make_age_groups_10 <- function(df_in){
   if("age" %in% colnames(df_in)){
-    df_in$age.cat10 <- NA
+    df_in$age.cat10 <- NA # those outside of the ranges below are labeled as missing
     df_in$age.cat10[df_in$age >= 15 & df_in$age <=24] <- "age15.24"
     df_in$age.cat10[df_in$age >= 25 & df_in$age <=34] <- "age25.34"
     df_in$age.cat10[df_in$age >= 35 & df_in$age <=44] <- "age35.44"
@@ -241,9 +290,12 @@ make_age_groups_10 <- function(df_in){
   return(df_in)
 }
 
+# Function to relabel age groups for lifecycle groups
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df
 make_age_groups_cont <- function(df_in){
   if("age" %in% colnames(df_in)){
-    df_in$age.cat <- NA
+    df_in$age.cat <- NA # those outside of ages below are labeled as missing
     df_in$age.cat[df_in$age >= 5 & df_in$age <=14] <- "age05.14"
     df_in$age.cat[df_in$age >= 15 & df_in$age <=24] <- "age15.24"
     df_in$age.cat[df_in$age >= 25 & df_in$age <=44] <- "age25.44"
@@ -254,6 +306,9 @@ make_age_groups_cont <- function(df_in){
   return(df_in)
 }
 
+### Larger function that includes previous functions to clean NHTS data
+# @Param df_in is the df to be cleaned
+# @return is the cleaned df as newdf
 clean_all_nhts <- function(df_in){
   newdf <- df_in %>%
     lower_colnames %>%
@@ -271,6 +326,14 @@ clean_all_nhts <- function(df_in){
   return(newdf)
 }
 
+########################################################################
+### 3. NHTS TRAVEL SURVEY: calculate -----------------------------------
+########################################################################
+
+# Function that calculates population represented in the survey
+# by race, sex, and age
+# @Param df_in is the df of NHTS
+# returns a df 
 get_pop_bygroup <- function(df_in){
   if("hisp" %in% colnames(df_in)){
     newdf <- df_in %>%
@@ -285,6 +348,11 @@ get_pop_bygroup <- function(df_in){
   }
 }
 
+# Function that calculates travel amount (person trips and person miles travelled) 
+# by race, sex, and age
+# @Param df_in is the df to be cleaned
+# @Param mode_type is the mode of travel, default is ALL modes of travel
+# returns a df
 get_travel_bygroup <- function(df_in, mode_type = "All"){
   if(mode_type=="Walk"){
     df_in <- df_in %>%
@@ -300,8 +368,8 @@ get_travel_bygroup <- function(df_in, mode_type = "All"){
   }
   newdf <- df_in %>%
     group_by(gender, race, hisp, age.cat) %>%
-    summarise(ptrips = sum(as.numeric(tripweight, na.rm= TRUE)),
-              pmt = sum(tripweight*distance, na.rm = TRUE)) %>%
+    summarise(ptrips = sum(as.numeric(tripweight, na.rm= TRUE)), # calculate person-trips
+              pmt = sum(tripweight*distance, na.rm = TRUE)) %>% # calculate person miles travelled
     filter(race %in% c("Black", "White"),
            hisp == "Nonhisp") %>%
     na.omit %>%
@@ -309,14 +377,11 @@ get_travel_bygroup <- function(df_in, mode_type = "All"){
   return(newdf)
 }
 
-get_exposure_1year <- function(year_in, mode_in = "All"){
-  newdf <- get_travel_bygroup(eval(parse(text = paste0("trip", year_in))), mode_type = mode_in) %>%
-    get_exposure(pop_in = eval(parse(text = paste0("popgroup", year_in))),
-                 travel_in = .) %>%
-    mutate(year = year_in)
-  return(newdf)
-}
-
+# Function that calculates exposure rate (travel amount / population) 
+# by race, sex, and age
+# @Param pop_in is the df with population data
+# @Param travel_in is the df with travel amount
+# returns a df
 get_exposure <- function(pop_in, travel_in, exp_type = NULL){
   newdf <- pop_in %>%
     inner_join(travel_in) %>%
@@ -328,13 +393,33 @@ get_exposure <- function(pop_in, travel_in, exp_type = NULL){
   return(newdf)
 }
 
+# Function that calculates exposure for a given year of the survey
+# by race, sex, and age
+# @Param year_in is an integer for survey year
+# @Param mode_in is the mode of travel, a string, default is ALL modes of travel
+# returns a df
+get_exposure_1year <- function(year_in, mode_in = "All"){
+  newdf <- get_travel_bygroup(eval(parse(text = paste0("trip", year_in))), mode_type = mode_in) %>%
+    get_exposure(pop_in = eval(parse(text = paste0("popgroup", year_in))),
+                 travel_in = .) %>%
+    mutate(year = year_in)
+  return(newdf)
+}
+
+# Function that calculates exposure (travel amount/pop) and risk (MV deaths/travel amount)
+# during the 2001-2010 period by race, sex, and age
+# assumes that 2001-2010 period travel amount is the average of 2001 and 2009 amounts
+# @Param df_2001 is df of exposure amounts for 2001, created from get_exposure_1year function
+# @Param df_2009 is df of exposure amounts for 2009, created from get_exposure_1year function
+# @Param df_cdc is df from cleaned CDC Vital Stats data, includes population and MV deaths
+# returns a df that includes risk and exposure for each population group
 calc_exp_risk_2000 <- function(df_2001, df_2009, df_cdc){
   newdf <- df_2001 %>% 
     rbind(df_2009) %>%
     dcast(gender + race + age.cat~ mode_type + year, value.var = "exposure") %>%
-    mutate(avg_daily_trip = (ptrip_per_pop_2001 + ptrip_per_pop_2009)/2,
+    mutate(avg_daily_trip = (ptrip_per_pop_2001 + ptrip_per_pop_2009)/2, # average daily trip across two surveys 
            avg_daily_mile = (pmt_per_pop_2001 + pmt_per_pop_2009)/2) %>%
-    left_join(df_cdc) %>%
+    left_join(df_cdc) %>% # merges with formatted population data from CDC data for 2001-2010
     mutate(total_trip_exp = avg_daily_trip*365*population,
            total_mile_exp = avg_daily_mile*365*population,
            risk_trip = deaths/total_trip_exp*10000000,
@@ -347,6 +432,11 @@ calc_exp_risk_2000 <- function(df_2001, df_2009, df_cdc){
   return(newdf)
 }
 
+# Function that calculates the Das Gupta demographic decomposition
+# to decompose MV death rate differences into an exposure and risk effect
+# during the 2001-2010 period by race, sex, and age
+# @Param df_in is the output from the calc_exp_risk_2000 function
+# returns a df with the risk and exposure effects
 decompose <- function(df_in){
   df_in$race <- as.factor(df_in$race)
   df_in$age.cat <- as.factor(df_in$age.cat)

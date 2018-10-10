@@ -1,25 +1,30 @@
 ---
 title: "Analysis and Plots"
-output:
-  html_document: default
+author: "Monica M. King"
+date: "10/10/2018"
+output: pdf_document
 ---
 
-```{r setup, eval=TRUE, include=FALSE}
-library(knitr)
-read_chunk("utils.r")
-read_chunk("config.r")
-read_chunk("clean.r")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Exposure, Risk, and Decomposition Plots
+## R Markdown
 
-TBA
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-## Figure: Risk and Exposure Effects 
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-Description TBA 
-
-```{r plot, echo=FALSE}
-risk_exp_plot
+```{r cars}
+summary(cars)
 ```
 
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
