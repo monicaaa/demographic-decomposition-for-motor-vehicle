@@ -31,13 +31,13 @@ source("utils.r") # sourcing all functions
 
 # Read in raw NHTS datasets 
 
-raw.person2001 <- read.table(c(paste0(data.dir, "travel/2001/", "person", ".csv")), 
+raw.person2001 <- read.table(c(paste0(data.dir, "2001/", "person", ".csv")), 
                              fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
-raw.trip2001 <- read.table(c(paste0(data.dir, "travel/2001/", "trip", ".csv")), 
+raw.trip2001 <- read.table(c(paste0(data.dir, "2001/", "trip", ".csv")), 
                            fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
-raw.person2009 <- read.table(c(paste0(data.dir, "travel/2009/", "person", ".csv")), 
+raw.person2009 <- read.table(c(paste0(data.dir, "2009/", "person", ".csv")), 
                              fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
-raw.trip2009 <- read.table(c(paste0(data.dir, "travel/2009/", "trip", ".csv")), 
+raw.trip2009 <- read.table(c(paste0(data.dir, "2009/", "trip", ".csv")), 
                            fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
 
 # Read in CDC Vital Stats files
@@ -47,4 +47,3 @@ list_of_cdc_travel_files <- c("cdc_travel_2001_2010",
 
 # 2000 population distribution for age-standardized calculations
 pop2000stand <- read.csv(c(paste0(data.dir, "pop2000stand.csv")))
-pop2000standmotor <- read.csv(c(paste0(data.dir, "pop2000standmotor.csv")))
