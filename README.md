@@ -43,3 +43,4 @@ Description of R scripts
 - **utils.r** contains all functions for the project
 - **config.r** sources code from utils.r and reads in data
 - **clean.r** runs functions to clean all necessary data 
+- **analysis.r** performs analysis and plots graphs
