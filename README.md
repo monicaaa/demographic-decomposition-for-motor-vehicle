@@ -44,3 +44,8 @@ Description of R scripts
 - **config.r** sources code from utils.r and reads in data
 - **clean.r** runs functions to clean all necessary data 
 - **analysis.r** performs analysis and plots graphs
+
+How to Use
+-------
+1) Download R Studio and packages listed under Dependencies
+2) Download Data above.
