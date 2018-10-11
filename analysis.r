@@ -1,36 +1,18 @@
-# age standardized death rate
+########################################################################
+#### Perform preliminary analysis---------------------------------------
+########################################################################
 
-age_stand_all <- exp.all %>%
-  left_join(pop2000stand) %>%
-  group_by(gender, race) %>%
-  mutate(death = death_10000_pop*proportion,
-         risk = risk_mile*proportion,
-         exposure = exp_mile*proportion) %>%
-  summarise(death_stand = sum(death),
-            risk_stand = sum(risk),
-            exp_stand = sum(exposure)) 
+# calculate b-w % difference in death, exposure, and risk rates
+bw_percent_diff_all <- calculate_percent_diff(age_stand_all)
+bw_percent_diff_pveh <- calculate_percent_diff(age_stand_pveh)
+bw_percent_diff_ped <- calculate_percent_diff(age_stand_ped)
 
-age_stand_pveh <- exp.pveh %>%
-  left_join(pop2000stand) %>%
-  group_by(gender, race) %>%
-  mutate(death = death_10000_pop*proportion,
-         risk = risk_mile*proportion,
-         exposure = exp_mile*proportion) %>%
-  summarise(death_stand = sum(death),
-            risk_stand = sum(risk),
-            exp_stand = sum(exposure)) 
+# plots b-w absolute values
+plot_exposure(exp.all)
+plot_exposure(exp.pveh)
+plot_exposure(exp.ped)
 
-age_stand_ped <- exp.ped %>%
-  left_join(pop2000stand) %>%
-  group_by(gender, race) %>%
-  mutate(death = death_10000_pop*proportion,
-         risk = risk_mile*proportion,
-         exposure = exp_mile*proportion) %>%
-  summarise(death_stand = sum(death),
-            risk_stand = sum(risk),
-            exp_stand = sum(exposure)) 
-
-# Risk and Exposure effects
+# plots risk and exposure effects
 risk_exp_plot <- ggplot(data = decomp_combined %>% 
                           dplyr::select(-total_effect, -c(risk_percent_mile:exp_percent_mile)) %>%
                           melt(id.vars = c("gender", "age.cat", "type")), 

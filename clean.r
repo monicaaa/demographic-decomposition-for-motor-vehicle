@@ -1,5 +1,5 @@
 ########################################################################
-#### Clean data and perform preliminary analysis------------------------
+#### Clean data and perform preliminary calculations--------------------
 ########################################################################
 
 # clean all CDC data and bring them into the R environment
@@ -41,3 +41,8 @@ decomp_combined <- rbind(decomp.all, decomp.ped, decomp.pveh)
 decomp_combined$type <- as.factor(decomp_combined$type)
 decomp_combined$type <- factor(decomp_combined$type, 
                                levels = c("Total", "Passenger Vehicle", "Pedestrian"))
+
+# age standardized rates for death, exposure, and risk
+age_stand_all <- calculate_as_rates(exp.all)
+age_stand_pveh <- calculate_as_rates(exp.pveh)
+age_stand_ped <- calculate_as_rates(exp.ped)

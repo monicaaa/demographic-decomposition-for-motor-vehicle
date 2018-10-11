@@ -452,7 +452,54 @@ decompose <- function(df_in){
   return(newdf)
 }
 
+# Function that calculates rates for MV death, exposure, and risk
+# during the 2001-2010 period by race, sex, and age
+# @Param df_in is the output from the calc_exp_risk_2000 function
+# returns a df with the calculated rates
+calculate_as_rates <- function(df_in){
+  newdf <- df_in %>%
+  left_join(pop2000stand) %>%
+  group_by(gender, race) %>%
+  mutate(death = death_10000_pop*proportion,
+         risk = risk_mile*proportion,
+         exposure = exp_mile*proportion) %>%
+  summarise(death_stand = sum(death),
+            risk_stand = sum(risk),
+            exp_stand = sum(exposure)) 
+  return(newdf)
+}
+
+# Function that calculates b-w % differences in MV death, exposure, and risk rates
+# during the 2001-2010 period by race, sex, and age
+# @Param df_in is the output from the calculate_as_rates function
+# returns a df with % differences
+calculate_percent_diff <- function(df_in){
+  newdf <- df_in %>% 
+    gather(variable, value, -(gender:race)) %>%
+    unite(temp, race, variable) %>%
+    spread(temp, value) %>% 
+    mutate(bw_percent_diff_death = (Black_death_stand-White_death_stand)/White_death_stand*100,
+           bw_percent_diff_risk = (Black_risk_stand-White_risk_stand)/White_risk_stand*100,
+           bw_percent_diff_exp = (Black_exp_stand-White_exp_stand)/White_exp_stand*100) %>%
+    select(-c(Black_death_stand:White_risk_stand))
+  return(newdf)
+}
+
+########################################################################
+### 4. PLOTS -----------------------------------------------------------
+########################################################################
+
+# Function that plots b-w absolute rates in exposure, risk, and death
+# during the 2001-2010 period by race, sex, and age
+# @Param exp_df is the output from the calculate_as_rates function
+# returns a plot
 plot_exposure <- function(exp_df, plot_title=NULL){
+  exp_df <- exp_df %>%
+    dplyr::select(gender, race, age.cat, death_10000_pop, risk_mile, exp_mile) %>%
+    melt(id.vars = c("gender", "race", "age.cat"),
+         variable.name = "factor_type", 
+         value.name = "rate")
+  levels(exp_df$factor_type) <- c("MV Death Rate", "Risk Rate", "Exposure Rate")
   plot_out <- exp_df %>%
     ggplot(aes(x=age.cat, y=rate, fill=race)) +
     geom_bar(stat="identity", position=position_dodge()) +
