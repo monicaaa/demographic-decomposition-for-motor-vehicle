@@ -17,10 +17,12 @@ Use the following saved links and download txt files (click "export") of motor v
 
 2) **National Household Travel Survey**
 
-Download Trip and Person files in CSV for the 2001 and 2009 surveys. Rename "DAYV2PUB.CSV" as "trip.csv" and "PERV2PUB.CSV" as "person.csv"
+Download Trip and Person files in CSV for the 2001 and 2009 surveys.
 * Link to download 2001 data: https://nhts.ornl.gov/2001/download/Ascii.zip
 * Link to download 2009 data: https://nhts.ornl.gov/2009/download/Ascii.zip
 
+Rename "DAYV2PUB.CSV" as "trip.csv" and "PERV2PUB.CSV" as "person.csv"
+ 
 R Dependencies
 --------
 * tidyverse
