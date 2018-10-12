@@ -40,30 +40,5 @@ Description of R scripts
 How to Use
 -------
 1) Download R Studio and install packages listed under Dependencies
-2) Download Data above and store as follows:
-
-This project directory
-|--Data
-
-|----cdc_travel_2001_2010.txt
-
-|----cdc_travel_2001_2010_ped.txt
-
-|----cdc_travel_2001_2010_pveh.txt
-
-|----travel
-
-|--------2001
-
-|------------person.csv
-
-|------------trip.csv
-
-|--------2009
-
-|------------person.csv
-
-|------------trip.csv
-
-
+2) Download Data above and store as TBD
 3) run "open -a Rstudio read_clean.r" and "open -a Rstudio analysis_plots.r"
