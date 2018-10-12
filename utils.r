@@ -6,7 +6,7 @@
 # @Param filename is the name of the .txt file
 # @return is a df
 read_in_cdc_region <- function(filename, col = 10){
-  rawdata <- read.table(c(paste(data.dir, filename, ".txt", sep="")), 
+  rawdata <- read.table(c(paste("data/", filename, ".txt", sep="")), 
                         fill=TRUE, header=TRUE, sep="\t", na.strings=c(""), 
                         colClasses = c("NULL",rep(NA,col)))
   return(na.omit(rawdata))
