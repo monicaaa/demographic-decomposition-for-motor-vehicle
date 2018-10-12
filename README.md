@@ -44,15 +44,26 @@ How to Use
 
 This project directory
 |--Data
+
 |----cdc_travel_2001_2010.txt
+
 |----cdc_travel_2001_2010_ped.txt
+
 |----cdc_travel_2001_2010_pveh.txt
+
 |----travel
+
 |--------2001
+
 |------------person.csv
+
 |------------trip.csv
+
 |--------2009
+
 |------------person.csv
+
 |------------trip.csv
+
 
 3) run "open -a Rstudio read_clean.r" and "open -a Rstudio analysis_plots.r"
