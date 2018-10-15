@@ -5,20 +5,20 @@ library(here)
 library(ggthemes)
 library(knitr)
 
-source("utils.r") # sourcing all functions
+source("functions.r") # sourcing all functions
 
 ########################################################################
 #### Read in data ------------------------------------------------------
 ########################################################################
 
 # Read in raw NHTS datasets 
-raw.person2001 <- read.table(here("data", "2001", "person.csv"), 
+raw.person2001 <- read.table(here("data", "person2001.csv"), 
                              fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
-raw.trip2001 <- read.table(here("data", "2001", "trip.csv"), 
+raw.trip2001 <- read.table(here("data", "trip2001.csv"), 
                            fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
-raw.person2009 <- read.table(here("data", "2009", "person.csv"), 
+raw.person2009 <- read.table(here("data", "person2009.csv"), 
                              fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
-raw.trip2009 <- read.table(here("data", "2009", "trip.csv"), 
+raw.trip2009 <- read.table(here("data", "trip2009.csv"), 
                            fill=TRUE, header=TRUE, sep=",", na.strings = c(".", seq(-10,-1)))
 
 # Read in CDC Vital Stats files
